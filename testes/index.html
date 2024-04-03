@@ -10,28 +10,38 @@
   <div class="form-container">
     <h1>Formulário de Praias</h1>
     <form id="beachForm">
-      <div class="form-group">
-        <label for="name">Nome:</label>
-        <input type="text" id="name" name="name" required>
-      </div>
-      <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" required>
-      </div>
-      <div id="beachFields">
+      <div id="campos">
         <div class="form-group">
-          <label for="beach1">Praia:</label>
-          <input type="text" class="beach" id="beach1" name="beach[]" required>
-          <button type="button" class="add-beach">Adicionar Praia</button>
+          <label for="name">Nome:</label>
+          <input type="text" id="name" name="name" required>
         </div>
+        <div class="form-group">
+          <label for="email">E-mail:</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div id="beachFields">
+          <div class="form-group">
+            <label for="beach1">Praia:</label>
+            <input type="text" class="beach" id="beach1" name="beach[]" required>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <button type="button" id="adicionarPraia">Adicionar</button>
       </div>
       <button type="submit">Enviar</button>
     </form>
   </div>
-  <script src="main.js"></script>
+
+  <div id="praiasDigitadas"></div>
+
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
   <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
   <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip-utils.js"></script>
+
+  <script src="main.js"></script>
 </body>
 </html>

@@ -1,54 +1,88 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('beachForm');
-  
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-  
-      const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
-  
-      generateDocx(data);
-    });
-  
-    function generateDocx(data) {
-        fetch('template.docx')
-          .then(response => response.arrayBuffer())
-          .then(template => {
-            const zip = new PizZip(template);
-            const doc = new window.docxtemplater(zip, {
-                paragraphLoop: true,
-                linebreaks: true,
-            });
-            doc.loadZip(zip);
-            doc.setData(data);
-            try {
-              doc.render();
-              console.error('To tentando renderizar');
-            } catch (error) {
-              console.error('Error rendering document:', error);
-              return;
-            }
-      
-            // Inserir praias na tabela
-            const content = doc.getZip().file('word/document.xml').asText();
-            const beaches = data['beach[]'];
-            if (beaches && beaches.length > 0) {
-                console.error('Entrei no IF');
-              let beachRows = '';
-              beaches.forEach(beach => {
-                beachRows += `<w:tr><w:tc><w:p><w:r><w:t>${beach}</w:t></w:r></w:p></w:tc></w:tr>`;
-              });
-              const updatedContent = content.replace('<w:tr><w:tc><w:p><w:r><w:t></w:t></w:r></w:p></w:tc></w:tr>', beachRows);
-              doc.getZip().file('word/document.xml', updatedContent);
-            }
-      
-            const output = doc.getZip().generate({ type: 'blob' });
-            console.error('vou gerar arquivo');
-            saveAs(output, 'formulario.docx');
-          });
-    }
+document.getElementById('campos').addEventListener('click', function(event) {
+  if (event.target.classList.contains('removerCampo')) {
+      event.target.parentNode.remove();
+  }
 });
-  
+
+document.getElementById('adicionarPraia').addEventListener('click', function() {
+  var camposDiv = document.getElementById('campos');
+  var novoCampo = document.createElement('div');
+  novoCampo.classList.add('form-group');
+  novoCampo.innerHTML = '<input type="text" class="beach" name="beach[]" required><button type="button" class="removerCampo">Remover</button>';
+  camposDiv.appendChild(novoCampo);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  // GERAR DOCX
+  const form = document.getElementById('beachForm');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => {
+      if (key.includes('[]')){
+        novakey = key.replace(/\[\]/g, '');
+
+        if (novakey in data){
+          data.beach.push(value);
+        } else {
+          data[novakey] = [value];
+        }
+      }
+      else {
+        data[key] = value;
+      }
+    });
+
+    generateDocx(data);
+  });
+
+  function loadFile(url, callback) {
+    PizZipUtils.getBinaryContent(url, callback);
+  }
+
+  function generateDocx(data) {
+    loadFile(
+      "./input.docx",
+      function (error, content) {
+          if (error) {
+              throw error;
+          }
+          //const TableModule = require("docxtemplater-table-module"); // adicionado para a tabela
+          const zip = new PizZip(content);
+          const doc = new window.docxtemplater(zip, {
+              paragraphLoop: true,
+              linebreaks: true,
+              //modules: [new TableModule.Vertical()], // adicionado para a tabela
+          });
+
+          // BRINCANDO COM data
+          /*data = {
+            beach: [
+                { name: "Genipabu" },
+                { name: "Ponta Negra" },
+                { name: "Camurupim" },
+            ],
+          }*/
+          // FIM DA BRINCADEIRA
+
+          // Render the document 
+          doc.render(data);
+
+          const blob = doc.getZip().generate({
+              type: "blob",
+              mimeType:
+                  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              // compression: DEFLATE adds a compression step.
+              // For a 50MB output document, expect 500ms additional CPU time
+              compression: "DEFLATE",
+          });
+          // Output the document using Data-URI
+          saveAs(blob, "output.docx");
+      }
+    );
+  }
+});

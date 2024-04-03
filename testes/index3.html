@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulário Dinâmico</title>
+<style>
+    .form-group {
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+    <h2>Formulário Dinâmico</h2>
+    <form id="numeroForm">
+        <div id="campos">
+            <div class="form-group">
+                <input type="number" name="numero[]" class="numero" required>
+                <button type="button" class="removerCampo">Remover</button>
+            </div>
+        </div>
+        <button type="button" id="adicionarCampo">Adicionar Próximo Número</button>
+        <button type="submit">Submeter</button>
+    </form>
+
+    <div id="numerosDigitados"></div>
+
+    <script>
+        document.getElementById('adicionarCampo').addEventListener('click', function() {
+            var camposDiv = document.getElementById('campos');
+            var novoCampo = document.createElement('div');
+            novoCampo.classList.add('form-group');
+            novoCampo.innerHTML = '<input type="number" name="numero[]" class="numero" required><button type="button" class="removerCampo">Remover</button>';
+            camposDiv.appendChild(novoCampo);
+        });
+
+        document.getElementById('numeroForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var numerosDigitadosDiv = document.getElementById('numerosDigitados');
+            numerosDigitadosDiv.innerHTML = ''; // Limpa o conteúdo anterior
+            var numeros = document.querySelectorAll('.numero');
+            numeros.forEach(function(numero) {
+                var numeroDigitado = numero.value;
+                var paragrafo = document.createElement('p');
+                paragrafo.textContent = "Número digitado: " + numeroDigitado;
+                numerosDigitadosDiv.appendChild(paragrafo);
+            });
+        });
+
+        document.getElementById('campos').addEventListener('click', function(event) {
+            if (event.target.classList.contains('removerCampo')) {
+                event.target.parentNode.remove();
+            }
+        });
+    </script>
+</body>
+</html>
