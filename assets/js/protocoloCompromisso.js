@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 compression: "DEFLATE",
             });
             // Output the document using Data-URI
-            saveAs(blob, "ProtocoloCompromisso - X.docx");
+            saveAs(blob, "ProtocoloCompromisso - " + data['processoNumero'] + ".docx");
         }
       );
     }
